@@ -40,15 +40,23 @@ in {
     enable =
       mkBoolOpt false "Whether or not to use Gnome as the desktop environment.";
     wallpaper = {
-      light = mkOpt (oneOf [str package]) pkgs.plusultra.wallpapers.nord-rainbow-light-nix "The light wallpaper to use.";
-      dark = mkOpt (oneOf [str package]) pkgs.plusultra.wallpapers.nord-rainbow-dark-nix "The dark wallpaper to use.";
+      light =
+        mkOpt (oneOf [str package])
+        pkgs.plusultra.wallpapers.nord-rainbow-light-nix
+        "The light wallpaper to use.";
+      dark =
+        mkOpt (oneOf [str package])
+        pkgs.plusultra.wallpapers.nord-rainbow-dark-nix
+        "The dark wallpaper to use.";
     };
-    color-scheme = mkOpt (enum ["light" "dark"]) "dark" "The color scheme to use.";
+    color-scheme =
+      mkOpt (enum ["light" "dark"]) "dark" "The color scheme to use.";
     wayland = mkBoolOpt true "Whether or not to use Wayland.";
     suspend =
       mkBoolOpt true "Whether or not to suspend the machine after inactivity.";
     monitors = mkOpt (nullOr path) null "The monitors.xml file to create.";
-    extensions = mkOpt (listOf package) [] "Extra Gnome extensions to install.";
+    extensions =
+      mkOpt (listOf package) [] "Extra Gnome extensions to install.";
   };
 
   config = mkIf cfg.enable {
@@ -80,13 +88,12 @@ in {
     ];
 
     systemd.tmpfiles.rules =
-      [
-        "d ${gdmHome}/.config 0711 gdm gdm"
-      ]
+      ["d ${gdmHome}/.config 0711 gdm gdm"]
       ++ (
         # "./monitors.xml" comes from ~/.config/monitors.xml when GNOME
         # display information is updated.
-        lib.optional (cfg.monitors != null) "L+ ${gdmHome}/.config/monitors.xml - - - - ${cfg.monitors}"
+        lib.optional (cfg.monitors != null)
+        "L+ ${gdmHome}/.config/monitors.xml - - - - ${cfg.monitors}"
       );
 
     systemd.services.plusultra-user-icon = {
@@ -133,7 +140,7 @@ in {
       libinput.enable = true;
       displayManager.gdm = {
         enable = true;
-        wayland = cfg.wayland;
+        inherit (cfg) wayland;
         autoSuspend = cfg.suspend;
       };
       desktopManager.gnome.enable = true;
@@ -151,7 +158,8 @@ in {
           "org/gnome/shell" = {
             disable-user-extensions = false;
             enabled-extensions =
-              (builtins.map (extension: extension.extensionUuid) (cfg.extensions ++ defaultExtensions))
+              (builtins.map (extension: extension.extensionUuid)
+                (cfg.extensions ++ defaultExtensions))
               ++ [
                 "native-window-placement@gnome-shell-extensions.gcampax.github.com"
                 "drive-menu@gnome-shell-extensions.gcampax.github.com"
@@ -161,10 +169,12 @@ in {
               ["org.gnome.Nautilus.desktop"]
               ++ optional config.plusultra.apps.firefox.enable "firefox.desktop"
               ++ optional config.plusultra.apps.vscode.enable "code.desktop"
-              ++ optional config.plusultra.desktop.addons.foot.enable "foot.desktop"
+              ++ optional config.plusultra.desktop.addons.foot.enable
+              "foot.desktop"
               ++ optional config.plusultra.apps.logseq.enable "logseq.desktop"
               ++ optional config.plusultra.apps.discord.enable "discord.desktop"
-              ++ optional config.plusultra.apps.element.enable "element-desktop.desktop"
+              ++ optional config.plusultra.apps.element.enable
+              "element-desktop.desktop"
               ++ optional config.plusultra.apps.steam.enable "steam.desktop";
           };
 
@@ -290,16 +300,9 @@ in {
           };
 
           "org/gnome/shell/extensions/top-bar-organizer" = {
-            left-box-order = [
-              "menuButton"
-              "activities"
-              "dateMenu"
-              "appMenu"
-            ];
+            left-box-order = ["menuButton" "activities" "dateMenu" "appMenu"];
 
-            center-box-order = [
-              "Space Bar"
-            ];
+            center-box-order = ["Space Bar"];
 
             right-box-order = [
               "keyboard"
@@ -334,7 +337,8 @@ in {
       package = pkgs.gnomeExtensions.gsconnect;
     };
 
+    # TODO: This should not be default
     # Open firewall for samba connections to work.
-    networking.firewall.extraCommands = "iptables -t raw -A OUTPUT -p udp -m udp --dport 137 -j CT --helper netbios-ns";
+    # networking.firewall.extraCommands = "iptables -t raw -A OUTPUT -p udp -m udp --dport 137 -j CT --helper netbios-ns";
   };
 }
