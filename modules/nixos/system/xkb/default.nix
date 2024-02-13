@@ -1,10 +1,13 @@
-{ options, config, lib, ... }:
-
-with lib;
-with lib.plusultra;
-let cfg = config.plusultra.system.xkb;
-in
 {
+  options,
+  config,
+  lib,
+  ...
+}:
+with lib;
+with lib.plusultra; let
+  cfg = config.plusultra.system.xkb;
+in {
   options.plusultra.system.xkb = with types; {
     enable = mkBoolOpt false "Whether or not to configure xkb.";
   };
@@ -12,9 +15,9 @@ in
   config = mkIf cfg.enable {
     console.useXkbConfig = true;
     services.xserver = {
-      xkbOptions = "caps:escape";
       layout = "de";
       xkbVariant = "nodeadkeys";
+      xkbOptions = "caps:escape";
     };
   };
 }

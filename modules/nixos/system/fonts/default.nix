@@ -1,14 +1,8 @@
-{ options
-, config
-, pkgs
-, lib
-, ...
-}:
+{ options, config, pkgs, lib, ... }:
 with lib;
-with lib.plusultra; let
-  cfg = config.plusultra.system.fonts;
-in
-{
+with lib.plusultra;
+let cfg = config.plusultra.system.fonts;
+in {
   options.plusultra.system.fonts = with types; {
     enable = mkBoolOpt false "Whether or not to manage fonts.";
     fonts = mkOpt (listOf package) [ ] "Custom font packages to install.";
@@ -41,7 +35,6 @@ in
             "Terminus"
           ];
         })
-      ]
-      ++ cfg.fonts;
+      ] ++ cfg.fonts;
   };
 }
