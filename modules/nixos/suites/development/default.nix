@@ -19,6 +19,7 @@ with lib.plusultra; let
     neovim = enabled;
     yubikey = enabled;
     prisma = enabled;
+    mods = enabled;
   };
 in
 {

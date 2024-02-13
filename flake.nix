@@ -24,7 +24,7 @@
     nixos-generators.inputs.nixpkgs.follows = "nixpkgs";
 
     # Snowfall Lib
-    snowfall-lib.url = "github:snowfallorg/lib?ref=v2.1.1";
+    snowfall-lib.url = "github:snowfallorg/lib/fix/home-module-imports";
     snowfall-lib.inputs.nixpkgs.follows = "nixpkgs";
 
     # Snowfall Flake
@@ -32,7 +32,7 @@
     flake.inputs.nixpkgs.follows = "unstable";
 
     # Snowfall Thaw
-    thaw.url = "github:snowfallorg/thaw?ref=v1.0.4";
+    thaw.url = "github:snowfallorg/thaw?ref=v1.0.5";
 
     # Comma
     comma.url = "github:nix-community/comma";
