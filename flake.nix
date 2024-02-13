@@ -47,15 +47,38 @@
     nix-ld.inputs.nixpkgs.follows = "unstable";
 
     # Neovim
-    neovim.url = "github:jakehamilton/neovim";
+    neovim.url = "github:Charging1948/neovim";
     neovim.inputs.nixpkgs.follows = "unstable";
 
     # Tmux
-    tmux.url = "github:jakehamilton/tmux";
+    tmux.url = "github:Charging1948/tmux";
     tmux.inputs = {
       nixpkgs.follows = "nixpkgs";
       unstable.follows = "unstable";
     };
+
+    # Devenv
+    devenv.url = "github:cachix/devenv";
+
+    # Nix-Colors
+    nix-colors.url = "github:misterio77/nix-colors";
+
+    # Hyprland
+    hyprland = {
+      url = "github:hyprwm/hyprland";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    hyprwm-contrib = {
+      url = "github:hyprwm/contrib";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
+    hyprland-plugins = {
+      url = "github:hyprwm/hyprland-plugins";
+      inputs.hyprland.follows = "hyprland";
+    };
+
+    # VSCode-Extensions
+    nix-vscode-extensions.url = "github:nix-community/nix-vscode-extensions";
 
     # Binary Cache
     attic = {
@@ -125,6 +148,11 @@
       flake = false;
     };
 
+    nix-gaming = {
+      url = "github:fufexan/nix-gaming";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Hosted Sites
     lasersandfeelings = {
       url = "github:jakehamilton/lasersandfeelings";
@@ -166,21 +194,22 @@
     };
   };
 
-  outputs = inputs: let
-    lib = inputs.snowfall-lib.mkLib {
-      inherit inputs;
-      src = ./.;
+  outputs = inputs:
+    let
+      lib = inputs.snowfall-lib.mkLib {
+        inherit inputs;
+        src = ./.;
 
-      snowfall = {
-        meta = {
-          name = "plusultra";
-          title = "Plus Ultra";
+        snowfall = {
+          meta = {
+            name = "plusultra";
+            title = "Plus Ultra";
+          };
+
+          namespace = "plusultra";
         };
-
-        namespace = "plusultra";
       };
-    };
-  in
+    in
     lib.mkFlake {
       channels-config = {
         allowUnfree = true;
@@ -201,12 +230,20 @@
         icehouse.overlays.default
         attic.overlays.default
         snowfall-docs.overlay
+        nix-gaming.overlays.default
+        devenv.overlays.default
       ];
 
       systems.modules.nixos = with inputs; [
+
         home-manager.nixosModules.home-manager
         nix-ld.nixosModules.nix-ld
         vault-service.nixosModules.nixos-vault-service
+
+        # NixOS Tweaks for gaming
+        nix-gaming.nixosModules.pipewireLowLatency
+        nix-gaming.nixosModules.steamCompat
+
         # TODO: Replace plusultra.services.attic now that vault-agent
         # exists and can force override environment files.
         # attic.nixosModules.atticd
@@ -216,12 +253,12 @@
         nixos-hardware.nixosModules.framework-11th-gen-intel
       ];
 
-      deploy = lib.mkDeploy {inherit (inputs) self;};
+      deploy = lib.mkDeploy { inherit (inputs) self; };
 
       checks =
         builtins.mapAttrs
-        (system: deploy-lib:
-          deploy-lib.deployChecks inputs.self.deploy)
-        inputs.deploy-rs.lib;
+          (system: deploy-lib:
+            deploy-lib.deployChecks inputs.self.deploy)
+          inputs.deploy-rs.lib;
     };
 }
