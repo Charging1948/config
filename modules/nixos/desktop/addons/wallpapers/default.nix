@@ -12,7 +12,7 @@ in
       "Whether or not to add wallpapers to ~/Pictures/wallpapers.";
   };
 
-  config = {
+  config = mkIf cfg.enable {
     plusultra.home.file = lib.foldl
       (acc: name:
         let wallpaper = wallpapers.${name};
