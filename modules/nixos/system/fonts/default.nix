@@ -1,17 +1,17 @@
-{
-  options,
-  config,
-  pkgs,
-  lib,
-  ...
+{ options
+, config
+, pkgs
+, lib
+, ...
 }:
 with lib;
 with lib.plusultra; let
   cfg = config.plusultra.system.fonts;
-in {
+in
+{
   options.plusultra.system.fonts = with types; {
     enable = mkBoolOpt false "Whether or not to manage fonts.";
-    fonts = mkOpt (listOf package) [] "Custom font packages to install.";
+    fonts = mkOpt (listOf package) [ ] "Custom font packages to install.";
   };
 
   config = mkIf cfg.enable {
@@ -20,7 +20,7 @@ in {
       LOG_ICONS = "true";
     };
 
-    environment.systemPackages = with pkgs; [font-manager];
+    environment.systemPackages = with pkgs; [ font-manager ];
 
     fonts.packages = with pkgs;
       [
@@ -28,7 +28,19 @@ in {
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
         noto-fonts-emoji
-        (nerdfonts.override {fonts = ["Hack"];})
+        (nerdfonts.override {
+          fonts = [
+            "Hack"
+            "FiraCode"
+            "CascadiaCode"
+            "IBMPlexMono"
+            "Iosevka"
+            "IosevkaTerm"
+            "JetBrainsMono"
+            "RobotoMono"
+            "Terminus"
+          ];
+        })
       ]
       ++ cfg.fonts;
   };
