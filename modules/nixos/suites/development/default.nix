@@ -1,15 +1,17 @@
-{
-  options,
-  config,
-  lib,
-  pkgs,
-  ...
+{ options
+, config
+, lib
+, pkgs
+, ...
 }:
 with lib;
 with lib.plusultra; let
   cfg = config.plusultra.suites.development;
   apps = {
-    vscode = enabled;
+    vscode = {
+      enable = true;
+      enableCustomInsiders = true;
+    };
     yubikey = enabled;
   };
   cli-apps = {
@@ -19,11 +21,12 @@ with lib.plusultra; let
     prisma = enabled;
     mods = enabled;
   };
-in {
+in
+{
   options.plusultra.suites.development = with types; {
     enable =
       mkBoolOpt false
-      "Whether or not to enable common development configuration.";
+        "Whether or not to enable common development configuration.";
   };
 
   config = mkIf cfg.enable {
@@ -42,6 +45,7 @@ in {
         # attic = enabled;
         at = enabled;
         direnv = enabled;
+        devenv = enabled;
         go = enabled;
         http = enabled;
         k8s = enabled;
@@ -50,7 +54,7 @@ in {
         qmk = enabled;
       };
 
-      virtualisation = {podman = enabled;};
+      virtualisation = { podman = enabled; };
     };
   };
 }
