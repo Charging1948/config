@@ -1,46 +1,50 @@
-{
-  options,
-  config,
-  lib,
-  pkgs,
-  ...
+{ options
+, config
+, lib
+, pkgs
+, ...
 }:
 with lib;
 with lib.plusultra; let
   cfg = config.plusultra.apps.jetbrains;
-  jetbrains-idea-config = {
-    programs = [
-      "clion"
-      "webstorm"
-      "rust-rover"
-      "pycharm-professional"
-      "rider"
-      "idea-ultimate"
-      "goland"
-    ];
-    extensions = ["ideavim" "github-copilot"];
+  programs = {
+    "clion" = [ ];
+    "webstorm" = [ ];
+    "rust-rover" = [ ];
+    "pycharm-professional" = [ ];
+    "rider" = [ ];
+    "idea-ultimate" = [ "kotlin" ];
+    "goland" = [ ];
   };
-in {
-  options.plusultra.apps.jetbrains = with types; {
-    enable = mkBoolOpt false "Enable JetBrains IDEs";
-    ides =
-      mkOpt (listOf str) jetbrains-idea-config.programs
-      "List of JetBrains IDEs to install";
-    extensions =
-      mkOpt (listOf str) jetbrains-idea-config.extensions
-      "List of Extensions to install in all IDEs";
+  globalExtensions = [ "ini" "ideavim" "github-copilot" "darcula-pitch-black" "nixidea" ];
+in
+{
+  options.plusultra.apps.jetbrains = with lib.types; {
+    enable = mkEnableOption "Enable JetBrains IDEs";
+    ides = mkOption {
+      type = attrsOf (listOf str);
+      default = jetbrains-idea-config.programs;
+      description = "Mapping of JetBrains IDEs to their specific extensions";
+    };
+    extensions = mkOption {
+      type = listOf str;
+      default = jetbrains-idea-config.globalExtensions;
+      description = "List of global Extensions to install in all IDEs";
+    };
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = let
+    environment.systemPackages = with lib; let
       inherit (pkgs.unstable) jetbrains;
+      installIde = name: extensions:
+        let
+          idePackage = attrByPath [ name ] null jetbrains;
+          specificExtensions = cfg.ides.${name} or [ ];
+          allExtensions = specificExtensions ++ cfg.extensions;
+        in
+        idePackage
+        // (jetbrains.plugins.addPlugins idePackage allExtensions);
     in
-      (map
-        (pkgName:
-          lib.attrByPath [pkgName] null jetbrains
-          // jetbrains.plugins.addPlugins jetbrains.${pkgName}
-          jetbrains-idea-config.extensions)
-        jetbrains-idea-config.programs)
-      ++ [pkgs.gnumake];
+    (mapAttrsToList installIde cfg.ides) ++ [ pkgs.gnumake ];
   };
 }
