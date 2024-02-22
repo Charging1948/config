@@ -63,14 +63,17 @@
     # Nix-Colors
     nix-colors.url = "github:misterio77/nix-colors";
 
+    # Stylix
+    stylix.url = "github:danth/stylix";
+
     # Hyprland
     hyprland = {
       url = "github:hyprwm/hyprland";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "unstable";
     };
     hyprwm-contrib = {
       url = "github:hyprwm/contrib";
-      inputs.nixpkgs.follows = "nixpkgs-unstable";
+      inputs.nixpkgs.follows = "unstable";
     };
     hyprland-plugins = {
       url = "github:hyprwm/hyprland-plugins";
@@ -198,31 +201,31 @@
     };
   };
 
-  outputs = inputs:
-    let
-      lib = inputs.snowfall-lib.mkLib {
-        inherit inputs;
-        src = ./.;
+  outputs = inputs: let
+    lib = inputs.snowfall-lib.mkLib {
+      inherit inputs;
+      src = ./.;
 
-        snowfall = {
-          meta = {
-            name = "plusultra";
-            title = "Plus Ultra";
-          };
-
-          namespace = "plusultra";
+      snowfall = {
+        meta = {
+          name = "plusultra";
+          title = "Plus Ultra";
         };
+
+        namespace = "plusultra";
       };
-    in
+    };
+  in
     lib.mkFlake {
       channels-config = {
         allowUnfree = true;
-        permittedInsecurePackages = [
-          # FIXME: This is a workaround for 22.11 and can
-          # be removed once NixPkgs is upgraded to 23.05.
-          "python-2.7.18.6"
-          "electron-25.9.0"
-        ];
+        # TODO: Test building now, as system is using 23.11
+        # permittedInsecurePackages = [
+        #   # FIXME: This is a workaround for 22.11 and can
+        #   # be removed once NixPkgs is upgraded to 23.05.
+        #   "python-2.7.18.6"
+        #   "electron-25.9.0"
+        # ];
       };
 
       overlays = with inputs; [
@@ -239,7 +242,6 @@
       ];
 
       systems.modules.nixos = with inputs; [
-
         home-manager.nixosModules.home-manager
         nix-ld.nixosModules.nix-ld
         vault-service.nixosModules.nixos-vault-service
@@ -253,16 +255,13 @@
         # attic.nixosModules.atticd
       ];
 
-      systems.hosts.jasper.modules = with inputs; [
-        nixos-hardware.nixosModules.framework-11th-gen-intel
-      ];
+      systems.hosts.jasper.modules = with inputs; [nixos-hardware.nixosModules.framework-11th-gen-intel];
 
-      deploy = lib.mkDeploy { inherit (inputs) self; };
+      deploy = lib.mkDeploy {inherit (inputs) self;};
 
       checks =
         builtins.mapAttrs
-          (system: deploy-lib:
-            deploy-lib.deployChecks inputs.self.deploy)
-          inputs.deploy-rs.lib;
+        (system: deploy-lib: deploy-lib.deployChecks inputs.self.deploy)
+        inputs.deploy-rs.lib;
     };
 }
