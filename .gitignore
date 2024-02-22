@@ -10,3 +10,14 @@ result
 
 # A useful artifact when working with configuration documentation
 options.json
+
+# Devenv
+.devenv*
+devenv.local.nix
+
+# direnv
+.direnv
+
+# pre-commit
+.pre-commit-config.yaml
+
