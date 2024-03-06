@@ -14,14 +14,10 @@ in {
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      qmk
-      keymapper
-    ];
+    hardware.keyboard.qmk = enabled;
 
-    services.udev.packages = with pkgs; [
-      qmk-udev-rules
-      zsa-udev-rules
-    ];
+    environment.systemPackages = with pkgs; [qmk keymapper];
+
+    services.udev.packages = with pkgs; [qmk-udev-rules zsa-udev-rules];
   };
 }
