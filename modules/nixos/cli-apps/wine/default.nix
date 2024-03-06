@@ -3,7 +3,6 @@
   config,
   lib,
   pkgs,
-  channels,
   ...
 }:
 with lib;
@@ -18,6 +17,6 @@ in {
   config = mkIf cfg.enable {
     environment.systemPackages = with pkgs;
       [winePackages.unstable winetricks wine64Packages.unstable]
-      ++ (lib.optionals cfg.enableBottles [channels.unstable.bottles]);
+      ++ (lib.optionals cfg.enableBottles [bottles.unstable]);
   };
 }
