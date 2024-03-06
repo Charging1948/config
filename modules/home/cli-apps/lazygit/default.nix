@@ -8,9 +8,9 @@
 }:
 with lib;
 with lib.plusultra; let
-  cfg = config.plusultra.tools.lazygit;
+  cfg = config.plusultra.cli-apps.lazygit;
 in {
-  options.plusultra.tools.lazygit = with types; {
+  options.plusultra.cli-apps.lazygit = with types; {
     enable = mkBoolOpt false "Whether or not to enable lazygit.";
   };
 
