@@ -1,29 +1,39 @@
-{ options, config, lib, pkgs, ... }:
-
-with lib;
-with lib.plusultra;
-let cfg = config.plusultra.apps.vscode;
-in
 {
+  options,
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+with lib;
+with lib.plusultra; let
+  cfg = config.plusultra.apps.vscode;
+in {
   options.plusultra.apps.vscode = with types; {
     enable = mkBoolOpt false "Whether or not to enable vscode.";
-    enableCustomInsiders = mkBoolOpt false "Whether or not to enable vscode-insiders with extensions.";
+    enableCustomInsiders =
+      mkBoolOpt false
+      "Whether or not to enable vscode-insiders with extensions.";
   };
 
-  config =
-    mkIf cfg.enable {
-      environment.systemPackages = with pkgs; [
-        vscode
-        (lib.optionals cfg.enableInsidersWithExtensions vscode-with-extensions.override {
-          vscode = (pkgs.vscode.override { isInsiders = true; }).overrideAttrs (oldAttrs: rec {
-            src = (builtins.fetchTarball {
-              url = "https://code.visualstudio.com/sha/download?build=insider&os=linux-x64";
-              sha256 = "0rxd85xgwyszjjziniby867xzrg7mqx81nq7np9j2kdvkhaf992y";
-            });
-            version = "latest";
+  config = mkIf cfg.enable {
+    environment.systemPackages = with pkgs; [
+      vscode
+      (lib.optionals cfg.enableInsidersWithExtensions
+        vscode-with-extensions.override
+        {
+          vscode =
+            (pkgs.vscode.override {isInsiders = true;}).overrideAttrs
+            (oldAttrs: rec {
+              src = builtins.fetchTarball {
+                url = "https://code.visualstudio.com/sha/download?build=insider&os=linux-x64";
+                # sha256 = "0rxd85xgwyszjjziniby867xzrg7mqx81nq7np9j2kdvkhaf992y";
+                sha256 = lib.fakeSha256;
+              };
+              version = "latest";
 
-            buildInputs = oldAttrs.buildInputs ++ [ pkgs.krb5 ];
-          });
+              buildInputs = oldAttrs.buildInputs ++ [pkgs.krb5];
+            });
           vscodeExtensions = with extensions; [
             open-vsx.asvetliakov.vscode-neovim
             open-vsx.wakatime.vscode-wakatime
@@ -47,7 +57,6 @@ in
             # open-vsx.
           ];
         })
-      ];
-    };
-
+    ];
+  };
 }
