@@ -22,7 +22,7 @@ in {
       keyboard.zsa = mkIf cfg.zsa.enable enabled;
       wooting = mkIf cfg.wooting.enable enabled;
     };
-    plusultra.user.extraGroups = mkIf cfg.wooting.enable ["input"];
+    plusultra.user.extraGroups = ["input"];
     environment.systemPackages = mkIf cfg.wooting.enable [pkgs.wootility];
   };
 }
