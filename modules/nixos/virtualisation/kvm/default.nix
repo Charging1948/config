@@ -15,7 +15,7 @@ in {
       mkOpt (listOf str) []
       "The hardware IDs to pass through to a virtual machine.";
     platform =
-      mkOpt (enum ["amd" "intel"]) "amd"
+      mkOpt (enum ["amd" "intel"]) "intel"
       "Which CPU platform the machine is using.";
     # Use `machinectl` and then `machinectl status <name>` to
     # get the unit "*.scope" of the virtual machine.
@@ -39,12 +39,10 @@ in {
         "kvm.ignore_msrs=1"
         # "vfio-pci.ids=${concatStringsSep "," cfg.vfioIds}"
       ];
-      extraModprobeConfig =
-        optionalString (length cfg.vfioIds > 0)
-        ''
-          softdep amdgpu pre: vfio vfio-pci
-          options vfio-pci ids=${concatStringsSep "," cfg.vfioIds}
-        '';
+      extraModprobeConfig = optionalString (length cfg.vfioIds > 0) ''
+        softdep amdgpu pre: vfio vfio-pci
+        options vfio-pci ids=${concatStringsSep "," cfg.vfioIds}
+      '';
     };
 
     systemd.tmpfiles.rules = [
@@ -52,9 +50,7 @@ in {
       "f /dev/shm/scream 0660 ${user.name} qemu-libvirtd -"
     ];
 
-    environment.systemPackages = with pkgs; [
-      virt-manager
-    ];
+    environment.systemPackages = with pkgs; [virt-manager];
 
     virtualisation = {
       libvirtd = {
