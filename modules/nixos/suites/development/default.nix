@@ -1,8 +1,9 @@
-{ options
-, config
-, lib
-, pkgs
-, ...
+{
+  options,
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 with lib;
 with lib.plusultra; let
@@ -16,27 +17,27 @@ with lib.plusultra; let
   };
   cli-apps = {
     tmux = enabled;
+    lazygit = enabled;
     neovim = enabled;
     yubikey = enabled;
     prisma = enabled;
     mods = enabled;
   };
-in
-{
+  tools = {
+    direnv = enabled;
+    gh = enabled;
+    just = enabled;
+    ssh = enabled;
+  };
+in {
   options.plusultra.suites.development = with types; {
     enable =
       mkBoolOpt false
-        "Whether or not to enable common development configuration.";
+      "Whether or not to enable common development configuration.";
   };
 
   config = mkIf cfg.enable {
-    networking.firewall.allowedTCPPorts = [
-      12345
-      3000
-      3001
-      8080
-      8081
-    ];
+    networking.firewall.allowedTCPPorts = [12345 3000 3001 8080 8081];
 
     plusultra = {
       inherit apps cli-apps;
@@ -54,7 +55,7 @@ in
         qmk = enabled;
       };
 
-      virtualisation = { podman = enabled; };
+      virtualisation = {podman = enabled;};
     };
   };
 }
