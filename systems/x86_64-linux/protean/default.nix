@@ -1,10 +1,11 @@
-{ pkgs
-, lib
-, ...
+{
+  pkgs,
+  lib,
+  ...
 }:
 with lib;
 with lib.plusultra; {
-  imports = [ ./hardware.nix ];
+  imports = [./hardware.nix];
 
   plusultra = {
     archetypes = {
@@ -12,28 +13,35 @@ with lib.plusultra; {
       gaming = enabled;
     };
 
-    apps = {
-      steam = enabled;
+    apps = {steam = enabled;};
+
+    suites = {nvidia = enabled;};
+
+    tools = {go = enabled;};
+
+    desktop = {
+      awesome = enabled;
+      sway = enabled;
+      gnome = enabled;
+      hyprland = enabled;
     };
 
-    system = { };
+    virtualization = {
+      kvm = enabled;
+      waydroid = enabled;
+      podman = enabled;
+    };
 
-    # hardware.audio = {
-    #   alsa-monitor.rules = [
-    #     (mkAlsaRename {
-    #       name = "alsa_card.usb-Generic_Blue_Microphones_2240BAH095W8-00";
-    #       description = "Blue Yeti";
-    #     })
-    #     (mkAlsaRename {
-    #       name = "alsa_output.usb-Generic_Blue_Microphones_2240BAH095W8-00.analog-stereo";
-    #       description = "Blue Yeti";
-    #     })
-    #     (mkAlsaRename {
-    #       name = "alsa_input.usb-Generic_Blue_Microphones_2240BAH095W8-00.analog-stereo";
-    #       description = "Blue Yeti";
-    #     })
-    #   ];
-    # };
+    hardware = {
+      opengl = enabled;
+      keyboard = {
+        enable = true;
+        zsa = enabled;
+        wooting = enabled;
+      };
+    };
+
+    system = {boot.plymouth = enabled;};
   };
 
   plusultra.home.extraOptions = {
