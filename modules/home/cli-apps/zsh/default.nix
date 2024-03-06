@@ -8,9 +8,7 @@
 
   cfg = config.plusultra.cli-apps.zsh;
 in {
-  options.plusultra.cli-apps.zsh = {
-    enable = mkEnableOption "ZSH";
-  };
+  options.plusultra.cli-apps.zsh = {enable = mkEnableOption "ZSH";};
 
   config = mkIf cfg.enable {
     programs = {
@@ -18,7 +16,31 @@ in {
         enable = true;
         enableAutosuggestions = true;
         enableCompletion = true;
-        syntaxHighlighting.enable = true;
+
+        syntaxHighlighting = {
+          enable = true;
+          highlighters = ["main" "brackets" "regexp" "root" "line"];
+        };
+
+        oh-my-zsh = {
+          enable = true;
+          plugins = [
+            "git"
+            "thefuck"
+            "direnv"
+            "docker"
+            "docker-compose"
+            "fzf"
+            "tmux"
+            "zoxide"
+            "magic-enter"
+            "colored-man-pages"
+            "common-aliases"
+            "aliases"
+            "zoxide"
+            "tmuxinator"
+          ];
+        };
 
         initExtra = ''
           # Fix an issue with tmux.
@@ -35,20 +57,10 @@ in {
 
         shellAliases = {
           say = "${pkgs.toilet}/bin/toilet -f pagga";
+          fvim = "nix run github:charging1948/neovim";
         };
 
-        plugins = [
-          {
-            name = "zsh-nix-shell";
-            file = "nix-shell.plugin.zsh";
-            src = pkgs.fetchFromGitHub {
-              owner = "chisui";
-              repo = "zsh-nix-shell";
-              rev = "v0.4.0";
-              sha256 = "037wz9fqmx0ngcwl9az55fgkipb745rymznxnssr3rx9irb6apzg";
-            };
-          }
-        ];
+        plugins = [pkgs.zsh-nix-shell];
       };
 
       starship = {
@@ -62,5 +74,14 @@ in {
         };
       };
     };
+    home.packages = with pkgs; [
+      fzf
+      thefuck
+      zoxide
+      direnv
+      tmuxinator
+      zoxide
+      tmux-cssh
+    ];
   };
 }
