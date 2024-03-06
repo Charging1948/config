@@ -25,6 +25,7 @@ with lib.plusultra; let
   };
   tools = {
     direnv = enabled;
+    devenv = enabled;
     gh = enabled;
     just = enabled;
     ssh = enabled;
