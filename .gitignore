@@ -10,3 +10,8 @@ result
 
 # A useful artifact when working with configuration documentation
 options.json
+
+.devenv/
+.direnv/
+.pre-commit-config.yaml
+.devenv.flake.nix
