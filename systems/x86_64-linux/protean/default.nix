@@ -41,7 +41,7 @@ with lib.plusultra; {
     virtualisation = {
       # kvm = enabled;
       # waydroid = enabled;
-      # podman = enabled;
+      podman = enabled;
     };
 
     # hardware = {
