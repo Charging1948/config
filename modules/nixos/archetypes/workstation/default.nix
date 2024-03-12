@@ -26,9 +26,7 @@ in {
         media = enabled;
       };
 
-      tools = {
-        appimage-run = enabled;
-      };
+      tools = {appimage-run = enabled;};
     };
   };
 }
